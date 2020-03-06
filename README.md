@@ -1,6 +1,7 @@
 # HFR_Chat
 
 Modifie en profondeur l'affichage du forum pour le rendre proche d'un client de chat.
+
 Ce script est en cours de développement et peut ne pas fonctionner correctement.
 
 ## Compatibilité
