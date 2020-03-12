@@ -1,6 +1,10 @@
 # Historique
 
 
+## v1.0.1 (2020-03-12)
+- Correction du délai d'apparition de la barre d'outils
+ 
+
 ## v1.0.0 (2020-03-12)
 - Ajout d'une page configuration accessible via un onglet
 - Ajout de MPStorage
