@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        [HFR] Chat
 // @namespace   ddst.github.io
-// @version     1.0.0
+// @version     1.0.1
 // @author      DdsT
 // @description Personnalisation de l'affichage du forum
 // @icon        https://www.hardware.fr/images_skin_2010/facebook/logo.png
@@ -46,16 +46,9 @@ along with this program.  If not, see https://ddst.github.io/HFR_Live/LICENSE.
  * Corriger le bug de suppression des sauts de ligne dans les citations et balises [fixed]
  */
 
-/* v1.0.0
+/* v1.0.1
  * ------
- * Ajout d'une page configuration
- * Ajout de MPStorage
- * Le script fonctionne maintenant avec les MP
- * Gestion des transactions des utilisateurs
- * Ajout d'un délai lors du passage de la souris sur le pseudo
- * Amélioration de l'affichage quand la page est partiellement chargée
- * Amélioration de la compatibilité avec d'autres scripts
- * Nettoyage du code
+ * Correction du délai d'apparition de la barre d'outil
  */
 
 /*****************
@@ -421,7 +414,6 @@ function hideToolbarCss() {
   #mesdiscussions .toolbar>.left {
     opacity          : 0;
     transition       : all 0.5s ease ${config.toolbarDelay/1000}s;
-    transition       : flex 0s ease 0s;
     flex-grow        : 1;
   }
   #mesdiscussions .toolbar>.left:hover {
