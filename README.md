@@ -25,6 +25,7 @@ Modifie en profondeur l'affichage du forum pour le rendre proche d'un client de 
 - Scripts HFR :
   - [HFR] Live mod DdsT v0.2.0
   - [HFR] Stats v0.0.5
+  - [HFR] Color Tag v2.3.2
   - [HFR] Infos rapides mod_r21 v4.0.3
   - [HFR] Last Post Super Light v1.1.1
   - [HFR] Ego Quote v0.9.8
