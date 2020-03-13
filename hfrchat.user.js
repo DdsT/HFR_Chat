@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        [HFR] Chat
 // @namespace   ddst.github.io
-// @version     1.0.1
+// @version     1.0.2
 // @author      DdsT
 // @description Personnalisation de l'affichage du forum
 // @icon        https://www.hardware.fr/images_skin_2010/facebook/logo.png
@@ -11,6 +11,7 @@
 // @supportURL  https://ddst.github.io/HFR_Chat/
 // @require     https://raw.githubusercontent.com/Wiripse/HFRGMTools/master/MPStorage.user.js?v=2019.10.3.3
 // @match       *://forum.hardware.fr/forum2*
+// @match       *://forum.hardware.fr/setperso*
 // @match       *://forum.hardware.fr/hfr/*/*sujet_*
 // @grant       GM.getValue
 // @grant       GM.setValue
@@ -44,11 +45,14 @@ along with this program.  If not, see https://ddst.github.io/HFR_Live/LICENSE.
  * ----
  * Améliorer le rendu des avatars lors de leur agrandissement
  * Corriger le bug de suppression des sauts de ligne dans les citations et balises [fixed]
+ * Gérer les icones à droite de la barre d'outils
  */
 
-/* v1.0.1
+/* v1.0.2
  * ------
- * Correction du délai d'apparition de la barre d'outil
+ * Amélioration de la compatibilité avec [HFR] Color Tag v2.3.2
+ * Ajout d'un paramètre pour configurer la couleur du texte de la barre d'outils
+ * Ajout d'un paramètre pour masquer les bords latéraux du tableau des messages
  */
 
 /*****************
@@ -77,19 +81,16 @@ const DEFAULT_CONFIG = {
   avatarWidth     : 50,        // largeur des avatars en pixels
   pageBackground  : "#eeeeee", // fond de la page (derrière le tableau des messages)
   forumBackground : "#ffffff", // fond du tableau des messages
+  toolbarColor    : "#999999", // couleur du texte de la barre d'outils
+  hideBorders     : true,      // les bords latéraux du tableau des messages sont masqués
   toolbarDelay    : 300,       // délai avant l'apparition de la barre d'outil au passage de la souris
   moodStatusDelay : 1000,      // délai avant la disparition des informations d'un profil au passage de la souris
   refreshDelay    : 1000,      // délai avant le rechargement de la page une fois les paramètres validés
 };
 
-/* Configuration du script */
-let config;
-
-/* utilisation de MPStorage */
-let useMPStorage;
-
-/* MPStorage */
-let LocalMPStorage = {
+let config;            // Configuration du script
+let useMPStorage;      // utilisation de MPStorage
+let LocalMPStorage = { // MPStorage
   version : '0.1',
   toolName : '[HFR] Chat',
   hfrChat : void 0,
@@ -150,9 +151,14 @@ function formatLayoutCss() {
     padding          :   12px;
   }
 
-  #mesdiscussions .messagetable td, #mesdiscussions table {
-    border-left  : none;
+  #mesdiscussions .messagetable .messCase1 {
     border-right : none;
+    border-left  : ${(config.hideBorders)?"none":""};
+  }
+
+  #mesdiscussions .messagetable .messCase2, #mesdiscussions .messagetable {
+    border-left  : none;
+    border-right : ${(config.hideBorders)?"none":""};
   }
 
   #mesdiscussions .messagetable>tbody>tr>td {
@@ -266,8 +272,7 @@ function moveProfileCss() {
   }
 
   #mesdiscussions .message b.s2 {
-    padding-right    : 5px;
-    color            : #000;
+    color        : #000;
   }
 
   #mesdiscussions .messCase1 b.s2 {
@@ -278,11 +283,14 @@ function moveProfileCss() {
     display : none;
   }
 
+  #mesdiscussions .hfr-chat-date {
+    margin-left : 4px;
+  }
+
   #mesdiscussions .MoodStatus {
     border           : 1px solid rgb(0,0,0,0.2);
     padding          : 1px;
-    margin-right     : 5px;
-    vertical-align   : bottom;
+    margin-left      : 4px;
   }
 
   #mesdiscussions .TransactionsReportsLink {
@@ -292,32 +300,52 @@ function moveProfileCss() {
 
   #mesdiscussions .MDStatus {
     padding          : 1px;
-    margin-right     : 5px;
+    margin-left      : 2px;
     color            : red;
   }
-  #mesdiscussions .ct-button {
-    float            : left;
-  }
+
   #mesdiscussions .messCase2 {
     max-width        : 0;
     position         : relative;
     overflow-wrap    : break-word;
   }
+
   #mesdiscussions .avatar_center{
     position         : relative;
   }
+
   #mesdiscussions .toolbar>span {
     float            : left;
   }
+
   #mesdiscussions .message .right {
     float            : none;
     display          : inline;
   }
-  #mesdiscussions .message .toolbar {
-    transition       : all 0.3s ease 0s;
-    border-bottom    : none;
-    color            : #999;
-    display          : flex;
+
+  #mesdiscussions .ct-profile {
+    float      : left;
+    position   : absolute;
+    left       : -14px;
+    top        : 5px;
+    box-shadow : none;
+  }
+
+  #mesdiscussions .ct-profile:hover {
+  box-shadow :  1px  1px 3px rgba(0, 0, 0, 0.15),
+               -1px -1px 3px rgba(0, 0, 0, 0.15),
+               -1px  1px 3px rgba(0, 0, 0, 0.15),
+                1px -1px 3px rgba(0, 0, 0, 0.15);
+  }
+
+  #mesdiscussions .ct-note-container {
+    display       : inline-block;
+    font-weight   : bold;
+    margin-left   : 2px;
+  }
+
+  #mesdiscussions .ct-input {
+    margin-left   : 20px;
   }
   `
 };
@@ -350,14 +378,14 @@ function moveProfile(node) {
     namespanContainer.show = () => namespanContainer.style.display = "inline-block";
     namespanContainer.hide = () => namespanContainer.style.display = "none";
     let timeout;
-    namespan.addEventListener("mouseover", () => {
+    name.addEventListener("mouseover", () => {
       namespanContainer.show();
       if (timeout) {
         clearTimeout(timeout);
         timeout = null;
       }
     });
-    namespan.addEventListener("mouseleave", () => {
+    name.addEventListener("mouseleave", () => {
       if (!timeout) timeout = setTimeout(namespanContainer.hide, config.moodStatusDelay);
     });
     
@@ -371,12 +399,14 @@ function moveProfile(node) {
     // Compatibilité avec les autres scripts
     let colorTag = profile.querySelector(".ct-button");
     if(colorTag) span.prepend(colorTag);
-    let colorTagNote = profile.querySelector(".ct-note");
-    if(colorTagNote) profile.appendChild(colorTagNote);
+    let colorTagNote = profile.querySelector(".ct-note-container");
+    if(colorTagNote) namespan.appendChild(colorTagNote);
     let lastPostHighlight = toolbar.querySelector(".gm_hfr_lph_led, .gm_hfr_lpsl_led");
     if(lastPostHighlight) span.insertBefore(lastPostHighlight, date);
     // Ajout d'un pseudo invisible dans la case de profil pour les scripts de liste noire
-    profile.appendChild(document.createElement("div")).appendChild(name.cloneNode(true));
+    let dummyName = name.cloneNode(true);
+    dummyName.classList.add("hfr-chat-dummy");
+    profile.appendChild(document.createElement("div")).appendChild(dummyName);
   }
 }
 
@@ -405,9 +435,10 @@ function hideToolbarCss() {
   #mesdiscussions .message .toolbar {
     transition       : all 0.3s ease 0s;
     border-bottom    : none;
-    color            : #999;
+    color            : ${config.toolbarColor};
     display          : flex;
   }
+
   #mesdiscussions .message .toolbar img {
     opacity          : 1;
   }
@@ -824,7 +855,7 @@ function newColor(parameter, table, text, changeTracker, colorPicker) {
     if (DEFAULT_CONFIG[parameter] != rgbToHex(config[parameter])) changeTracker.setChange();
     td.style.backgroundColor = DEFAULT_CONFIG[parameter]; 
     return false};
-  td.saveState = () => config[parameter] = td.style.backgroundColor;
+  td.saveState = () => config[parameter] = rgbToHex(td.style.backgroundColor);
   td.oncontextmenu = td.resetState;
   tr.insertCell().innerHTML = text;
   return td;
@@ -903,6 +934,7 @@ function createConfig() {
   newParameter("formatLayout"   , parameters, "Habillage général modifié", false, changeTracker);
   newParameter("hideToolbar"    , parameters, "Barre d'outil masquée", false, changeTracker);
   newParameter("formatAvatar"   , parameters, "Avatars reformatés", false, changeTracker);
+  newParameter("hideBorders"    , parameters, "Masquer les bords latéraux du tableau des messages", false, changeTracker);
   newInput(    "forumWidth"     , parameters, "Largeur du tableau des messages en pixels", changeTracker, 200);
   newInput(    "profileWidth"   , parameters, "Largeur de la colonne de profil en pixels", changeTracker, 0);
   newInput(    "avatarWidth"    , parameters, "Largeur des avatars en pixels", changeTracker, 0);
@@ -911,6 +943,7 @@ function createConfig() {
   newInput(    "moodStatusDelay", parameters, "Délai en ms avant la disparition des informations d'un profil au passage de la souris", changeTracker, 0);
   newColor(    "pageBackground" , parameters, "Couleur du fond de la page (derrière le tableau des messages)", changeTracker, colorPicker);
   newColor(    "forumBackground", parameters, "Couleur du fond du tableau des message", changeTracker, colorPicker);
+  newColor(    "toolbarColor"   , parameters, "Couleur du texte de la barre d'outils", changeTracker, colorPicker);
   newHeaderRow(parameters, "Paramètres nécessitant un rechargement de la page", 2);
   newParameter("moveProfile"    , parameters, "Information du profil dans la barre d'outil", true, changeTracker);
   newParameter("addAvatar"      , parameters, "Avatars pour les membres qui n'en ont pas", true, changeTracker);

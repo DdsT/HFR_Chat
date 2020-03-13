@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        [HFR] Chat
 // @namespace   ddst.github.io
-// @version     1.0.1
+// @version     1.0.2
 // @author      DdsT
 // @description Personnalisation de l'affichage du forum
 // @icon        https://www.hardware.fr/images_skin_2010/facebook/logo.png
@@ -11,6 +11,7 @@
 // @supportURL  https://ddst.github.io/HFR_Chat/
 // @require     https://raw.githubusercontent.com/Wiripse/HFRGMTools/master/MPStorage.user.js?v=2019.10.3.3
 // @match       *://forum.hardware.fr/forum2*
+// @match       *://forum.hardware.fr/setperso*
 // @match       *://forum.hardware.fr/hfr/*/*sujet_*
 // @grant       GM.getValue
 // @grant       GM.setValue
