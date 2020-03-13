@@ -1,4 +1,4 @@
-# HFR_Chat
+# [HFR] Chat
 
 Modifie en profondeur l'affichage du forum pour le rendre proche d'un client de chat.
 
