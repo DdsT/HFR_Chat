@@ -48,7 +48,7 @@ along with this program.  If not, see https://ddst.github.io/HFR_Live/LICENSE.
  * Gérer les icones à droite de la barre d'outils
  */
 
-/* v1.0.2
+/* v1.0.3
  * ------
  * Limite la hauteur des images de la barre d'outils à 16 pixels
  */
