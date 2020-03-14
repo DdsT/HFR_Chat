@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        [HFR] Chat
 // @namespace   ddst.github.io
-// @version     1.0.2
+// @version     1.0.3
 // @author      DdsT
 // @description Personnalisation de l'affichage du forum
 // @icon        https://www.hardware.fr/images_skin_2010/facebook/logo.png
@@ -50,9 +50,7 @@ along with this program.  If not, see https://ddst.github.io/HFR_Live/LICENSE.
 
 /* v1.0.2
  * ------
- * Amélioration de la compatibilité avec [HFR] Color Tag v2.3.2
- * Ajout d'un paramètre pour configurer la couleur du texte de la barre d'outils
- * Ajout d'un paramètre pour masquer les bords latéraux du tableau des messages
+ * Limite la hauteur des images de la barre d'outils à 16 pixels
  */
 
 /*****************
@@ -288,39 +286,43 @@ function moveProfileCss() {
   }
 
   #mesdiscussions .MoodStatus {
-    border           : 1px solid rgb(0,0,0,0.2);
-    padding          : 1px;
-    margin-left      : 4px;
+    border      : 1px solid rgb(0,0,0,0.2);
+    padding     : 1px;
+    margin-left : 4px;
   }
 
   #mesdiscussions .TransactionsReportsLink {
-    padding          : 1px;
-    margin-right     : 5px;
+    padding      : 1px;
+    margin-right : 5px;
   }
 
   #mesdiscussions .MDStatus {
-    padding          : 1px;
-    margin-left      : 2px;
-    color            : red;
+    padding     : 1px;
+    margin-left : 2px;
+    color       : red;
   }
 
   #mesdiscussions .messCase2 {
-    max-width        : 0;
-    position         : relative;
-    overflow-wrap    : break-word;
+    max-width     : 0;
+    position      : relative;
+    overflow-wrap : break-word;
   }
 
   #mesdiscussions .avatar_center{
-    position         : relative;
+    position : relative;
   }
 
   #mesdiscussions .toolbar>span {
-    float            : left;
+    float : left;
+  }
+
+  #mesdiscussions .toolbar img {
+    max-height : 16px;
   }
 
   #mesdiscussions .message .right {
-    float            : none;
-    display          : inline;
+    float   : none;
+    display : inline;
   }
 
   #mesdiscussions .ct-profile {
@@ -339,13 +341,13 @@ function moveProfileCss() {
   }
 
   #mesdiscussions .ct-note-container {
-    display       : inline-block;
-    font-weight   : bold;
-    margin-left   : 2px;
+    display     : inline-block;
+    font-weight : bold;
+    margin-left : 2px;
   }
 
   #mesdiscussions .ct-input {
-    margin-left   : 20px;
+    margin-left : 20px;
   }
   `
 };
