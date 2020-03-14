@@ -1,5 +1,9 @@
 # Historique
 
+## v1.0.3 (2020-03-14)
+
+- Limite la hauteur des images de la barre d'outils à 16 pixels
+
 ## v1.0.2 (2020-03-13)
 
 - Amélioration de la compatibilité avec [HFR] Color Tag v2.3.2
