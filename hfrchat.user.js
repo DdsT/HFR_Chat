@@ -66,7 +66,7 @@ const DEFAULT_CONFIG = {
   date            : 0,         // date de création de la configuration
   formatLayout    : true,      // l'habillage du tableau des messages est modifié
   formatAvatar    : true,      // les avatars sont redimensionnés
-  statusAvatar    : false,     // les avatars montrent l'état du membre (en ligne/hors ligne)
+  statusAvatar    : true,      // les avatars montrent l'état du membre (en ligne/hors ligne)
   moveProfile     : true,      // les informations du profil sont déplacés dans la barre d'outil
   hideToolbar     : true,      // la barre d'outil est masquée
   formatDate      : true,      // la date du message est formattée de manière compacte
