@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        [HFR] Chat
 // @namespace   ddst.github.io
-// @version     1.0.3
+// @version     1.1.0
 // @author      DdsT
 // @description Personnalisation de l'affichage du forum
 // @icon        https://www.hardware.fr/images_skin_2010/facebook/logo.png
@@ -48,9 +48,10 @@ along with this program.  If not, see https://ddst.github.io/HFR_Live/LICENSE.
  * Gérer les icones à droite de la barre d'outils
  */
 
-/* v1.0.3
+/* v1.1.0
  * ------
- * Limite la hauteur des images de la barre d'outils à 16 pixels
+ * Ajout de l'état du membre au niveau de l'avatar
+ * Correction d'un bug qui nécessitait un rechargement lors de la modification de paramètres n'en requérant pas
  */
 
 /*****************
@@ -65,6 +66,7 @@ const DEFAULT_CONFIG = {
   date            : 0,         // date de création de la configuration
   formatLayout    : true,      // l'habillage du tableau des messages est modifié
   formatAvatar    : true,      // les avatars sont redimensionnés
+  statusAvatar    : false,     // les avatars montrent l'état du membre (en ligne/hors ligne)
   moveProfile     : true,      // les informations du profil sont déplacés dans la barre d'outil
   hideToolbar     : true,      // la barre d'outil est masquée
   formatDate      : true,      // la date du message est formattée de manière compacte
@@ -80,6 +82,8 @@ const DEFAULT_CONFIG = {
   pageBackground  : "#eeeeee", // fond de la page (derrière le tableau des messages)
   forumBackground : "#ffffff", // fond du tableau des messages
   toolbarColor    : "#999999", // couleur du texte de la barre d'outils
+  onlineColor     : "#00ff00", // couleur de la bordure des membres en ligne
+  offlineColor    : "#ff0000", // couleur de la bordure des membres hors ligne
   hideBorders     : true,      // les bords latéraux du tableau des messages sont masqués
   toolbarDelay    : 300,       // délai avant l'apparition de la barre d'outil au passage de la souris
   moodStatusDelay : 1000,      // délai avant la disparition des informations d'un profil au passage de la souris
@@ -212,6 +216,33 @@ function formatAvatarCss() {
     transition       : max-width 0.3s ease 0.5s, border-radius 0.1s ease 0s;
   }
   `
+};
+/*************************
+ * ETAT DANS LES AVATARS *
+ *************************/
+
+function statusAvatarCss() {
+  return `
+  #mesdiscussions .hfr-chat-offline {
+    filter : drop-shadow(0px 0px 3px ${config.offlineColor});
+  }
+
+  #mesdiscussions .hfr-chat-online {
+    filter : drop-shadow(0px 0px 3px ${config.onlineColor});
+  }
+  `
+};
+
+/* Colorier la bordure de l'avatar en fonction de l'état du membre */
+function statusAvatar(node) {
+  for (const message of node.querySelectorAll(".message")) {
+    let profileImg = message.querySelector("img[alt='profil']");
+    let avatar = message.querySelector(".avatar_center");
+    if (profileImg && avatar) {
+      if (/online/.test(profileImg.src)) avatar.classList.add("hfr-chat-online");
+      if (/offline/.test(profileImg.src)) avatar.classList.add("hfr-chat-offline");  
+    }
+  }
 };
 
 /********************
@@ -807,7 +838,11 @@ function newParameter(parameter, table, text, needReset, changeTracker) {
   };
   checkbox.saveState = () => config[parameter] = checkbox.checked;
   checkbox.oncontextmenu = checkbox.resetState;
-  checkbox.onchange = changeTracker.setReset;
+  if (needReset) {
+    checkbox.onchange = changeTracker.setReset;
+  }else {
+    checkbox.onchange = changeTracker.setChange;
+  }
   return checkbox;
 }
 
@@ -946,9 +981,12 @@ function createConfig() {
   newColor(    "pageBackground" , parameters, "Couleur du fond de la page (derrière le tableau des messages)", changeTracker, colorPicker);
   newColor(    "forumBackground", parameters, "Couleur du fond du tableau des message", changeTracker, colorPicker);
   newColor(    "toolbarColor"   , parameters, "Couleur du texte de la barre d'outils", changeTracker, colorPicker);
+  newColor(    "onlineColor"    , parameters, "Couleur des membres en ligne", changeTracker, colorPicker);
+  newColor(    "offlineColor"   , parameters, "Couleur des membres hors ligne", changeTracker, colorPicker);
   newHeaderRow(parameters, "Paramètres nécessitant un rechargement de la page", 2);
   newParameter("moveProfile"    , parameters, "Information du profil dans la barre d'outil", true, changeTracker);
   newParameter("addAvatar"      , parameters, "Avatars pour les membres qui n'en ont pas", true, changeTracker);
+  newParameter("statusAvatar"   , parameters, "Bordures des avatars coloriées en fonction de la présence", true, changeTracker);
   newParameter("colorName"      , parameters, "Pseudos colorés", true, changeTracker);
   newParameter("formatQuote"    , parameters, "Citations dans les messages reformatées", true, changeTracker);
   newParameter("formatDate"     , parameters, "Dates compactes", true, changeTracker);
@@ -982,6 +1020,7 @@ function createConfig() {
 /* Appliquer les modifications du script à un message */
 function customize(node) {
   if (config.addAvatar)     addAvatar(node);
+  if (config.statusAvatar)  statusAvatar(node);
   if (config.colorName)     colorName(node);
   if (config.formatDate)    formatDate(node);
   if (config.moveProfile)   moveProfile(node);
@@ -1030,6 +1069,7 @@ function applyCss() {
   if (config.hideToolbar)   style += hideToolbarCss();
   if (config.formatAvatar)  style += formatAvatarCss();
   if (config.addAvatar)     style += addAvatarCss();
+  if (config.statusAvatar)  style += statusAvatarCss();
   if (config.moveProfile)   style += moveProfileCss();
   if (config.formatSpoiler) style += formatSpoilerCss();
   

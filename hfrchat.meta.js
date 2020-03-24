@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        [HFR] Chat
 // @namespace   ddst.github.io
-// @version     1.0.3
+// @version     1.1.0
 // @author      DdsT
 // @description Personnalisation de l'affichage du forum
 // @icon        https://www.hardware.fr/images_skin_2010/facebook/logo.png
