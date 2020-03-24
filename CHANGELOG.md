@@ -1,5 +1,10 @@
 # Historique
 
+## v1.1.0 (2020-03-24)
+
+- Ajout de l'état du membre au niveau de l'avatar
+- Correction d'un bug qui nécessitait un rechargement lors de la modification de paramètres n'en requérant pas
+
 ## v1.0.3 (2020-03-14)
 
 - Limite la hauteur des images de la barre d'outils à 16 pixels
