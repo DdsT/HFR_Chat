@@ -1,5 +1,9 @@
 # Historique
 
+## v1.1.1 (2022-02-14)
+
+- Ajout du support de [HFR] Postal Recall 3.0.0
+
 ## v1.1.0 (2020-03-24)
 
 - Ajout de l'état du membre au niveau de l'avatar
