@@ -48,10 +48,9 @@ along with this program.  If not, see https://ddst.github.io/HFR_Live/LICENSE.
  * Gérer les icones à droite de la barre d'outils
  */
 
-/* v1.1.0
+/* v1.1.1
  * ------
- * Ajout de l'état du membre au niveau de l'avatar
- * Correction d'un bug qui nécessitait un rechargement lors de la modification de paramètres n'en requérant pas
+ * Ajout du support pour [HFR] Postal Recall 3.0.0
  */
 
 /*****************
@@ -303,7 +302,11 @@ function moveProfileCss() {
   #mesdiscussions .message b.s2 {
     color        : #000;
   }
-
+  
+  #mesdiscussions .messCase1 div[postalrecall] b.s2 {
+    display : block;
+  }
+  
   #mesdiscussions .messCase1 b.s2 {
     display : none;
   }
